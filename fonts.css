@@ -1,0 +1,23 @@
+@font-face {
+    font-family: "Mochiy Pop One";
+    src: url("https://files.amitae.cc/web/fonts/hinted-MochiyPopOne-Regular.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/MochiyPopOne-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Instrument Serif";
+    src: url("https://files.amitae.cc/web/fonts/hinted-InstrumentSerif-Regular.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/InstrumentSerif-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Instrument Serif";
+    src: url("https://files.amitae.cc/web/fonts/hinted-InstrumentSerif-Italic.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/InstrumentSerif-Italic.ttf") format("truetype");
+    font-style: italic;
+    font-weight: normal;
+}

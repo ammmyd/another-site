@@ -1,0 +1,8 @@
+@import url("/fonts.css");
+
+main p {
+    font-family: "Mochiy Pop One", sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: #333;
+}

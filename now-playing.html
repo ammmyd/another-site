@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Now Playing · ListenBrainz</title>
+<link rel="stylesheet" href="now-playing.css">
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div id="root"></div>
+  </div>
+<script>
+(function(){
+  "use strict";
+
+  // ---- config resolution: ?user= param wins, else hardcoded default ----
+  const DEFAULT_USERNAME = "theblighted";   // <- optionally hardcode your username here
+  const params = new URLSearchParams(location.search);
+  let username = (params.get("user") || DEFAULT_USERNAME || "").trim();
+
+  const API = "https://api.listenbrainz.org/1";
+  const REFRESH_MS = 20000;
+  const root  = document.getElementById("root");
+  const stage = document.getElementById("stage");
+  let timer = null;
+
+  // ---------- helpers ----------
+  const esc = s => String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  function coverUrl(meta){
+    const m = (meta && meta.mbid_mapping) || {};
+    if (m.caa_release_mbid && m.caa_id != null){
+      return `https://archive.org/download/mbid-${m.caa_release_mbid}/mbid-${m.caa_release_mbid}-${m.caa_id}_thumb250.jpg`;
+    }
+    const rel = m.release_mbid ||
+      (meta && meta.additional_info && meta.additional_info.release_mbid);
+    if (rel) return `https://coverartarchive.org/release/${rel}/front-250`;
+    return null;
+  }
+
+  async function fetchFallbackCover(artist, track, album){
+    if (!track || !artist) return null;
+    try {
+      let q = `recording:"${track}" AND artist:"${artist}"`;
+      if (album) q += ` AND release:"${album}"`;
+      const data = await fetchJSON(
+        `https://musicbrainz.org/ws/2/recording/?query=${encodeURIComponent(q)}&fmt=json&limit=5`
+      );
+      for (const rec of (data.recordings || [])){
+        for (const rel of (rec.releases || [])){
+          if (rel.id) return `https://coverartarchive.org/release/${rel.id}/front-250`;
+        }
+      }
+    } catch(e){}
+    return null;
+  }
+
+  function ago(ts){
+    if (!ts) return "";
+    const s = Math.max(1, Math.floor(Date.now()/1000 - ts));
+    if (s < 60)      return s + "s ago";
+    const m = Math.floor(s/60);  if (m < 60) return m + "m ago";
+    const h = Math.floor(m/60);  if (h < 24) return h + "h ago";
+    const d = Math.floor(h/24);  if (d < 7)  return d + "d ago";
+    return new Date(ts*1000).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  }
+
+  // ---------- data ----------
+  async function fetchJSON(url){
+    const r = await fetch(url, { headers:{ "Accept":"application/json" } });
+    if (r.status === 404) { const e = new Error("not_found"); e.code = 404; throw e; }
+    if (!r.ok) throw new Error("http_" + r.status);
+    return r.json();
+  }
+
+  async function load(){
+    if (!username) return renderSetup();
+    try {
+      // 1) what's playing right now
+      let data = await fetchJSON(`${API}/user/${encodeURIComponent(username)}/playing-now`);
+      let listens = (data.payload && data.payload.listens) || [];
+      if (listens.length){
+        return renderTrack(listens[0], true);
+      }
+      // 2) fall back to most recent listen
+      data = await fetchJSON(`${API}/user/${encodeURIComponent(username)}/listens?count=1`);
+      listens = (data.payload && data.payload.listens) || [];
+      if (listens.length){
+        return renderTrack(listens[0], false);
+      }
+      renderEmpty();
+    } catch (err){
+      renderError(err && err.code === 404 ? "notfound" : "network");
+    }
+  }
+
+  // ---------- renderers ----------
+  function renderTrack(listen, isLive){
+    const meta   = listen.track_metadata || {};
+    const title  = meta.track_name   || "Unknown track";
+    const artist = meta.artist_name  || "Unknown artist";
+    const album  = meta.release_name || "";
+    const when   = isLive ? "" : ago(listen.listened_at);
+    const cover  = coverUrl(meta);
+
+    stage.classList.toggle("lit", isLive);
+
+    const eyebrow = isLive
+      ? `<div class="eyebrow">
+           <span class="eq">
+           Now Playing
+         </div>`
+      : `<div class="eyebrow past">
+           <span class="paused-dot"></span> Last Played${when ? " · " + esc(when) : ""}
+         </div>`;
+
+    const art = cover
+      ? `<img class="art" alt="" src="${esc(cover)}"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'art art-fallback',textContent:'\\u266A'}))">`
+      : `<div class="art art-fallback">&#9834;</div>`;
+
+    const profile = `https://listenbrainz.org/user/${encodeURIComponent(username)}/`;
+
+    root.innerHTML = `
+      <a class="card-link fade" href="${esc(profile)}" target="_blank" rel="noopener noreferrer">
+        <div class="card">
+          <div class="art-wrap">${art}</div>
+          <div class="meta">
+            ${eyebrow}
+            <div class="title">${esc(title)}</div>
+            <div class="artist">${esc(artist)}</div>
+            ${album ? `<div class="album">${esc(album)}</div>` : ""}
+            <div class="footer">
+              <span>${esc(username)}</span>
+              <span class="brand">via <b>ListenBrainz</b></span>
+            </div>
+          </div>
+        </div>
+      </a>`;
+
+    if (!cover){
+      fetchFallbackCover(artist, title, album).then(function(url){
+        if (!url) return;
+        const fallback = root.querySelector(".art-fallback");
+        if (!fallback) return;
+        const img = document.createElement("img");
+        img.className = "art";
+        img.alt = "";
+        img.src = url;
+        img.onerror = function(){ img.replaceWith(Object.assign(document.createElement("div"), {className:"art art-fallback", textContent:"♪"})); };
+        fallback.replaceWith(img);
+      });
+    }
+  }
+
+  function renderLoading(){
+    stage.classList.remove("lit");
+    root.innerHTML = `
+      <div class="card">
+        <div class="sk sk-art"></div>
+        <div class="meta" style="flex:1">
+          <div class="sk sk-line" style="width:40%"></div>
+          <div class="sk sk-line" style="width:85%;height:20px"></div>
+          <div class="sk sk-line" style="width:55%"></div>
+        </div>
+      </div>`;
+  }
+
+  function renderEmpty(){
+    stage.classList.remove("lit");
+    root.innerHTML = `
+      <div class="panel fade">
+        <div class="mono">Shh...</div>
+        <h2>Nothing's playing yet...</h2>
+        <p><b>${esc(username)}</b>'s not listening to anything right now. Just wait until they do!</p>
+      </div>`;
+  }
+
+  function renderError(kind){
+    stage.classList.remove("lit");
+    const msg = kind === "notfound"
+      ? `No ListenBrainz user named <b>${esc(username)}</b> was found.`
+      : `Couldn't reach ListenBrainz. Retrying...`;
+    root.innerHTML = `
+      <div class="panel fade">
+        <div class="mono">Hmm</div>
+        <h2>${kind === "notfound" ? "User not found" : "Connection trouble"}</h2>
+        <p>${msg}</p>
+        ${kind === "notfound" ? `<form id="f"><input id="u" placeholder="ListenBrainz username" autocomplete="off"><button>Set</button></form>` : ""}
+      </div>`;
+    wireForm();
+  }
+
+  /*function renderSetup(){
+    stage.classList.remove("lit");
+    root.innerHTML = `
+      <div class="panel fade">
+        <div class="mono">Now Playing</div>
+        <h2>Connect your ListenBrainz</h2>
+        <p>Enter your username to show what you're listening to. Embed with <b>?user=name</b> to skip this step.</p>
+        <form id="f">
+          <input id="u" placeholder="ListenBrainz username" autocomplete="off" autofocus>
+          <button>Go</button>
+        </form>
+      </div>`;
+    wireForm();
+  }*/
+
+  function wireForm(){
+    const f = document.getElementById("f");
+    if (!f) return;
+    f.addEventListener("submit", function(e){
+      e.preventDefault();
+      const v = document.getElementById("u").value.trim();
+      if (!v) return;
+      username = v;
+      // keep it in the URL so a reload (when self-hosted) remembers it
+      const url = new URL(location.href);
+      url.searchParams.set("user", v);
+      history.replaceState(null, "", url);
+      start();
+    });
+  }
+
+  // ---------- lifecycle ----------
+  function start(){
+    if (timer) clearInterval(timer);
+    renderLoading();
+    load();
+    if (username) timer = setInterval(load, REFRESH_MS);
+  }
+
+  // pause polling when the tab/iframe isn't visible
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden){ if (timer){ clearInterval(timer); timer = null; } }
+    else if (username && !timer){ load(); timer = setInterval(load, REFRESH_MS); }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>

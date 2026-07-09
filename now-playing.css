@@ -1,0 +1,32 @@
+@import url("/fonts.css");
+
+#root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.meta {
+    font-family: "Instrument Serif", serif;
+    font-weight: normal;
+}
+
+.footer {
+    display: none;
+}
+
+.art{
+    display: block;
+    block-size: 128px;
+}
+
+.art-wrap {
+    display: grid;
+    place-items: center;
+}
+
+.art-fallback {
+    display: grid;
+    place-items: center;
+}
