@@ -1,0 +1,26 @@
+@import url("/fonts.css");
+
+body {
+    color: #FFF;
+}
+
+a {
+    text-decoration: none;
+    color: #96FFB9;
+}
+
+a:hover {
+    color: #29392C;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
