@@ -70,8 +70,8 @@ main p {
 }
 
 #mainspace {
-    display: flex;
-    justify-content: space-between;
+    display: table;
+    table-layout: fixed;
     text-align: center;
     border: 2px solid #ccc;
     border-width: 0 2px 0 2px;
@@ -79,12 +79,16 @@ main p {
 }
 
 #leftbar {
+    display: table-cell;
     width: 180px;
     border-right: 2px dotted #ccc;
+    vertical-align: top;
 }
 
 #contentspace {
+    display: table-cell;
     width: 540px;
+    vertical-align: top;
 }
 
 #ad-embed {
