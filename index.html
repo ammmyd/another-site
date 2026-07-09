@@ -13,9 +13,32 @@
 	<header></header>
 
 	<main>
-		<p>come back soon~</p>
-		<div id="listening">
-			<iframe src="now-playing.html" width="200px" height="300px" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+		<div id="topbar">
+			<img type="image" id="logo" src="/banner.png" alt="amity's page">
+		</div>
+		<div id="navbar">
+			<a href="/home.html" class="nav-link" id="home" target="contentframe">Home</a>
+			<a href="/about.html" class="nav-link" id="about" target="contentframe">About</a>
+			<a href="/services.html" class="nav-link" id="services" target="contentframe">Services</a>
+		</div>
+		<div id="mainspace">
+			<div id="leftbar">
+				<br>
+				<div id="listening">
+					<iframe src="/now-playing.html" width="180px" height="300px" frameborder="0"
+						allowtransparency="true" allow="encrypted-media"></iframe>
+				</div>
+			</div>
+			<div id="contentspace">
+				<iframe src="/home.html" width="100%" height="100%" frameborder="0" allowtransparency="true" name="contentframe"
+					allow="encrypted-media"></iframe>
+			</div>
+		</div>
+		<div id="ad-embed">
+			<iframe src="https://ad.ari.lt/ads/embed?from=amitae.cc"
+				sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"
+				title="An embed showing a silly image and author information." style="border:none;max-width:100%"
+				width="722" height="98" loading="lazy" role="img"> </iframe>
 		</div>
 	</main>
 	<footer></footer>

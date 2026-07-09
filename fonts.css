@@ -21,3 +21,27 @@
     font-style: italic;
     font-weight: normal;
 }
+
+@font-face {
+    font-family: "Kaisei Opti";
+    src: url("https://files.amitae.cc/web/fonts/hinted-KaiseiOpti-Regular.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/KaiseiOpti-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Kaisei Opti";
+    src: url("https://files.amitae.cc/web/fonts/hinted-KaiseiOpti-Medium.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/KaiseiOpti-Medium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "Kaisei Opti";
+    src: url("https://files.amitae.cc/web/fonts/hinted-KaiseiOpti-Bold.woff") format("woff"),
+    url("https://files.amitae.cc/web/fonts/KaiseiOpti-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: bold;
+}

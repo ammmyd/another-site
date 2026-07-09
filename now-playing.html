@@ -117,7 +117,7 @@
          </div>`;
 
     const art = cover
-      ? `<img class="art" alt="" src="${esc(cover)}"
+      ? `<img type="image" class="art" alt="Album Art" src="${esc(cover)}"
               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'art art-fallback',textContent:'\\u266A'}))">`
       : `<div class="art art-fallback">&#9834;</div>`;
 

@@ -1,4 +1,8 @@
 @import url("/fonts.css");
+body {
+    display: grid;
+    place-items: center;
+}
 
 main p {
     font-family: "Mochiy Pop One", sans-serif;
@@ -6,3 +10,71 @@ main p {
     line-height: 1.5;
     color: #333;
 }
+
+#topbar, #navbar, #mainspace {
+    width: 720px;
+}
+
+#topbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #006867;
+    text-align: center;
+    height: 128px;
+}
+
+#navbar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    text-align: center;
+    height: 48px;
+}
+
+#navbar a {
+    text-decoration: none;
+    color: #FFF ;
+    font-family: "Mochiy Pop One", sans-serif;
+}
+
+#navbar #home {
+    background-color: #005748;
+}
+
+#navbar #about {
+    background-color: #006867;
+}
+
+#navbar #services {
+    background-color: #008a72;
+}
+
+.nav-link {
+    background-color: #444;
+    padding: 10px;
+    transition: letter-spacing 0.3s ease;
+}
+
+.nav-link:hover {
+    letter-spacing: 0.1em;
+}
+
+#mainspace {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-width: 0 2px 0 2px;
+    height: 540px;
+}
+
+#leftbar {
+    width: 180px;
+    border-right: 2px dotted #ccc;
+}
+
+#contentspace {
+    width: 540px;
+}
+
+#ad-embed

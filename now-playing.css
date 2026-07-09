@@ -5,11 +5,18 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    text-decoration: none;
 }
 
 .meta {
-    font-family: "Instrument Serif", serif;
+    font-family: "Kaisei Opti", serif;
     font-weight: normal;
+    text-decoration: none;
+}
+
+.card-link {
+    color: #005748;
+    text-decoration: none;
 }
 
 .footer {
