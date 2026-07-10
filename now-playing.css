@@ -37,3 +37,8 @@
     display: grid;
     place-items: center;
 }
+
+.title, .artist, .album {
+    font-size: 1.2rem;
+    font-family: "Mochiy Pop One", sans-serif;
+}

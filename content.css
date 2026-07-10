@@ -24,3 +24,7 @@ td, th {
   text-align: left;
   padding: 8px;
 }
+
+h1, p, th, td {
+  font-family: "Kaisei Opti", serif;
+}
